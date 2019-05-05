@@ -4,9 +4,7 @@
 import time
 import zmq
 import sys
-
 import credenciados as Credenciados
-
 
 lista_credenciados = Credenciados.Credenciados.retornaListaCredenciados()      #lista provisória de credenciados no complexo
 
@@ -28,7 +26,7 @@ while True:
     for credenciado in lista_credenciados:
         if(credenciado.id == id_requisicao):
             flagCredenciado = True
-            break;
+            break
 
     if (flagCredenciado) and (visitante == "cadastrado"):       #Tratamento das requisições
         socket.send_string("Cliente %s permitido e credenciado" % id_requisicao)    #caso de cliente na lista do complexo e credenciado

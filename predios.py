@@ -4,9 +4,10 @@
 import time
 import zmq
 import sys
+import credenciados as Credenciados
 
 lista_credenciados = Credenciados.Credenciados.retornaListaCredenciados()
-
+ 
 porta = sys.argv[1]                                     #Recebe a porta como argumento na hora da execução do código
 
 context = zmq.Context()
@@ -18,7 +19,7 @@ while True:
     requisicao = socket.recv_string()                   #Recebe a mensagem do cliente
     id_requisicao, id_predio_solicitado, visitante = requisicao.split()       #Tratamento da mensagem
 
-    print("CLIENTE: %s" %id_requisicao)                 #informação da requisição será exibida do servidor
+    print("CLIENTE: %s" %id_requisicao)                 #informação da requisição será exibida no servidor
     print("CREDENCIAL: %s" % visitante)
 
     flagAutorizadoNoPredio = False
@@ -29,7 +30,7 @@ while True:
                     flagAutorizadoNoPredio = True
                     break
             if(flagAutorizadoNoPredio):
-                break;
+                break
 
     if (flagAutorizadoNoPredio):       #Tratamento das requisições
         socket.send_string("Cliente %s permitido no prédio solicitado" % id_requisicao)    #caso de cliente na lista do predio e credenciado

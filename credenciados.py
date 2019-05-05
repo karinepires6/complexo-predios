@@ -15,9 +15,11 @@ import andar as Andar
 # Pessoa 7 tem acesso ao prédio 1 e aos andares 1, 4 e 5 e ao prédio 2 com acesso ao andar 3
 ##
 class Credenciados:
+    
     def retornaListaCredenciados():
+
+
         lista_credenciados = []                     #lista provisória de credenciados no complexo
-        
         lista_credenciados.append(Pessoa.Pessoa("2", [Predio.Predio("1", [Andar.Andar("2"), Andar.Andar("4")])]))
         lista_credenciados.append(Pessoa.Pessoa("5", [Predio.Predio("2", [Andar.Andar("3"), Andar.Andar("5")])]))
         lista_credenciados.append(Pessoa.Pessoa("7", [Predio.Predio("1", [Andar.Andar("1"), Andar.Andar("4"), Andar.Andar("5")]), Predio.Predio("2", [Andar.Andar("3")])]))
