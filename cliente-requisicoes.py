@@ -7,10 +7,10 @@ import sys
 from random import randrange
 
 
-porta = sys.argv[1]              #Recebe a porta como argumento na hora da execução do código
+porta = sys.argv[1]                       #Recebe a porta como argumento na hora da execução do código
 
 context = zmq.Context()
-socket = context.socket(zmq.REP)
+socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:"+ porta) #Socket faz a conexão com o servidor
 
 while True:
@@ -22,10 +22,12 @@ while True:
         visitante = False
 
 
-    if visitante:                         #Informa se o cliente é um visitante ou não
-        socket.send_string("%i %i" % (id_cliente, "visitante"))         #envio da mensagem ao servidor
+    if visitante:                                                           #Informa se o cliente é um visitante ou não
+        print("Requisicao:\nCliente %i\nCredencial: Visitante" % id_cliente)
+        socket.send_string("%i %s" % (id_cliente, "visitante"))             #envio da mensagem ao servidor
     else:
-        socket.send_string("%i %i" % (id_cliente, "cadastrado"))        #envio da mensagem ao servidor
+        print("Requisicao:\nCliente %i\nCredencial: Cadastrado" % id_cliente)
+        socket.send_string("%i %s" % (id_cliente, "cadastrado"))            #envio da mensagem ao servidor
 
     
 
@@ -34,7 +36,7 @@ while True:
 
 
 
-    resposta = socket.recv()                                        #Aguarda pela resposta do servidor
-    print("Cliente %s %s " % (id_cliente, resposta))                #Informa a resposta
-
+    resposta = socket.recv_string()                                         #Aguarda pela resposta do servidor
+    print("Cliente %s %s " % (id_cliente, resposta))                        #Informa a resposta
+    print("\n\n\n")
     time.sleep(1)
