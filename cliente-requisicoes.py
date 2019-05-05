@@ -7,7 +7,7 @@ import sys
 from random import randrange
 
 
-porta = sys.argv[1]                       #Recebe a porta como argumento na hora da execução do código
+porta = "5000"                     #Recebe a porta como argumento na hora da execução do código
 
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
