@@ -70,7 +70,7 @@ while True:
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
         else:
-            print("Requisicao negada, usuário %i nao tem permissao.")
+            print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
         time.sleep(1)
     elif requisicao_entrada[1] != None:                 # Existe requisição para predio, mas não para andar
@@ -82,7 +82,7 @@ while True:
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
         else:
-            print("Requisicao negada, usuário %i nao tem permissao.")
+            print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
         time.sleep(1)
     elif requisicao_entrada[0] != None:                 # Existe requisição para complexo, mas não para predio e nem andar
@@ -95,7 +95,7 @@ while True:
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
         else:
-            print("Requisicao negada, usuário %i nao tem permissao.")
+            print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
         time.sleep(1)
     else:

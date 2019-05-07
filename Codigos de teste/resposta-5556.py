@@ -1,7 +1,6 @@
 import time
 import zmq
 import sys
-import credenciados as Credenciados
 
                                
 context = zmq.Context()
