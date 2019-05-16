@@ -69,6 +69,8 @@ while True:
         resposta = socket_andar.recv_string()
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
+        elif resposta == "Populacao":
+            print("Usuario %i negado. O andar já atingiu a população máxima")
         else:
             print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
@@ -81,6 +83,8 @@ while True:
         resposta = socket_predio.recv_string()
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
+        elif resposta == "Populacao":
+            print("Usuario %i negado. O prédio já atingiu a população máxima")
         else:
             print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
@@ -94,6 +98,8 @@ while True:
         resposta = socket_complexo.recv_string()
         if resposta == "Permitido":
             print("Usuario %i permitido com acesso de %s" %(requisicao_entrada[3], requisicao_entrada[4]))
+        elif resposta == "Populacao":
+            print("Usuario %i negado. O complexo já atingiu a população máxima")
         else:
             print("Requisicao negada, usuário %i nao tem permissao." % requisicao_entrada[3])
 
