@@ -33,7 +33,7 @@ while True:
                 if entrada not in andar:
                     print("Andar inexistente")
                 else:                                   # O andar existe
-                    if andar[1] == max_andar:
+                    if andar[1] >= max_andar:
                         socket.send_string("CAPACIDADE ANDAR")
                     else:
                         andar[1] += 1
@@ -43,7 +43,7 @@ while True:
                 if entrada not in predio:
                     print("Predio inexistente")
                 else:                                   # O andar existe
-                    if predio[1] == max_predio:
+                    if predio[1] >= max_predio:
                         socket.send_string("CAPACIDADE ANDAR")
                     else:
                         predio[1] += 1
@@ -53,7 +53,7 @@ while True:
                 if entrada not in complexo:
                     print("Complexo inexistente")
                 else:
-                    if complexo[1] == max_complexo:
+                    if complexo[1] >= max_complexo:
                         socket.send_string("CAPACIDADE COMPLEXO")
                     else:
                         complexo[1] += 1
@@ -94,7 +94,7 @@ while True:
                 if entrada not in predio:
                     print("Predio inexistente")
                 else:                                   # O andar existe
-                    if predio[1] == max_predio:
+                    if predio[1] >= max_predio:
                         socket.send_string("CAPACIDADE PREDIO")
                     else:
                         predio[1] += 1                       # Incrementa a população do andar
@@ -104,7 +104,7 @@ while True:
                 if entrada not in complexo:
                     print("Complexo inexistente")
                 else:
-                    if complexo[1] == max_complexo:
+                    if complexo[1] >= max_complexo:
                         socket.send_string("CAPACIDADE COMPLEXO")
                     else:
                         complexo[1] += 1
@@ -135,7 +135,7 @@ while True:
                 if entrada not in complexo:
                     print("Complexo inexistente")
                 else:
-                    if complexo[1] == max_complexo:
+                    if complexo[1] >= max_complexo:
                         socket.send_string("CAPACIDADE COMPLEXO")
                     else:
                         complexo[1] += 1
