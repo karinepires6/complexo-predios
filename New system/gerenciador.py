@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # O código do gerenciador vai ser responsável por gerenciar quem tem acesso ao complexo.
 # Também irá gerenciar a quantidade de pessoas que estão presentes, tanto no complexo quanto
 # nos prédios e andares.
@@ -21,6 +22,16 @@ socket_andar.connect("tcp://localhost:"+porta_andar)
 porta_predio = "5557"
 socket_predio = context.socket(zmq.REQ)
 socket_predio.connect("tcp://localhost:"+porta_predio)
+
+
+porta_servidor_Generico = "5559"
+socket_Generico = context.socket(zmq.REQ)
+socket_Generico.connect("tcp://localhost:"+porta_servidor_Generico)
+
+
+
+
+
 
 # Fim da definição de sockets
 
@@ -56,19 +67,27 @@ def Verifica_Credenciais(id_user, id_predio, id_andar, cargo):
         print("O usuario deseja ir para um prédio")
         
     else:
-        permissao = Requsicao_Andar(id_user, id_predio, id_andar, cargo)
+        print("O usuario deseja ir para um andar")
+        permissao =  Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
         if permissao:
             return True
         else:
             return False
         
-        print("O usuario deseja ir para um andar")
+        
     
     
 
+def Requisicao_Entrada(id_user, id_predio, id_andar, cargo):
+    socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
 
-def Requsicao_Andar(id_user, id_predio, id_andar, cargo):
-    socket_andar.send_string("%s %s %s %s")
+    mensagem_Retorno = socket_Generico.recv_string()
+    print(mensagem_Retorno)
+
+    return mensagem_Retorno
+
+def Requisicao_Andar(id_user, id_predio, id_andar, cargo):
+    socket_andar.send_string("%s %s %s %s" % ())
     permissao = socket_andar.recv_string()
 
     if permissao == "ACEITA":
@@ -78,8 +97,9 @@ def Requsicao_Andar(id_user, id_predio, id_andar, cargo):
     print("Envia requsicao para andar")
 
 
-def Requisicao_Predio():
+def Requisicao_Predio(id_user, id_predio, cargo):
     print("Envia requsicao para predio")
+
 
 
 
@@ -113,8 +133,9 @@ def Saida():
 def main():
     while True:
         #As requisições recebidas serão do tipo: [id_user, predio, andar, cargo]
-        requsicao = socket.recv_string()
-        operacao, id_user, id_predio, id_andar, cargo = requsicao.split()
+        requisicao = socket.recv_string()
+        requisicao = requisicao.decode()
+        operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
 
         if operacao == "ENTRADA":
             Entrada(id_user, id_predio, id_andar, cargo)
@@ -133,4 +154,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ##main()
+    #MensagemTeste()
+    requisicao = socket.recv()
+    requisicao = requisicao.decode()
+    operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
+    resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+    socket.send_string("%s" % (resposta))
