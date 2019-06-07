@@ -7,6 +7,7 @@
 import time
 import zmq
 import sys
+import interface_complexobd as ComplexoService
 
 # Sessão de definição de sockets:
 # Socket que irá receber as requisições de entrada dos clientes
@@ -14,14 +15,6 @@ porta_servidor = "5555"
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:"+ porta_servidor) 
-# Socket que irá efetuar as requsições de autenticação dos clientes
-porta_andar = "5556"
-socket_andar = context.socket(zmq.REQ)
-socket_andar.connect("tcp://localhost:"+porta_andar)
-
-porta_predio = "5557"
-socket_predio = context.socket(zmq.REQ)
-socket_predio.connect("tcp://localhost:"+porta_predio)
 
 
 porta_servidor_Generico = "5559"
@@ -29,24 +22,37 @@ socket_Generico = context.socket(zmq.REQ)
 socket_Generico.connect("tcp://localhost:"+porta_servidor_Generico)
 
 
-
-
-
-
 # Fim da definição de sockets
 
 # Definição das listas de controle de usuários:
-usuarios_permitidos = ["1"]     # Contém as id's dos usuários permitidos no complexo
-lista_predios = [["1", 0, []]]           # Contém as id's dos prédios, população e lista de usuarios presentes
-lista_andares = [[["1", "1"], 0, []]]           # Contém as id's dos andares ([id_predio, id_andar]), população e lista de usuarios presentes
-
+usuarios_permitidos_complexo = ComplexoService.listaUsuariosPermitidosComplexo()
+usuarios_permitidos_predio = ComplexoService.listaUsuariosPermitidosNosPredios()
+usuarios_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
 # Fim da definição das listas
 
 
+# Listas de locais
+lista_predios = ComplexoService.listaPredios()
+lista_andares = ComplexoService.listaAndaresPorPredio()
 
 
+# Lista com quantidades presentes nos locais
+# A quantidade de pessoas no complexo é apenas um inteiro
+quantidade_complexo = 0
+quantidade_predio = []
+quantidade_andar = []
+# Fim das listas
 
 
+# Ininicializa as listas com as ids dos locais e zera a população de cada
+def Inicializa_Listas(quantidade_predio, quantidade_andar):
+    for predio in lista_predios:
+        quantidade_predio.append((predio['id_predio'], 0))
+
+    for andar in lista_andares:
+        quantidade_andar.append((andar['id_predio'], andar['id_andar'], 0))
+
+    
 
 
 # Realiza a autenticação do usuário no complexo
@@ -54,83 +60,91 @@ def Autentica_Pessoa(id_user, cargo):
     # Se o usuário tem credencial de visitante, ele tem acesso
     if cargo == "VISITANTE":
         return True
-    elif id_user in usuarios_permitidos: # Se não, apenas se for credenciado
+    elif id_user in usuarios_permitidos_complexo: # Se não, apenas se for credenciado
         return True
     else:
         return False
 
 
-# O sistema identifica para onde o usuário deseja ir e faz uma requisição para o local
-def Verifica_Credenciais(id_user, id_predio, id_andar, cargo):
-    if id_andar == None:
-       
-        print("O usuario deseja ir para um prédio")
+def Trata_mensagem_retorno(mensagem_recebida):
+    mensagem = mensagem_recebida.split()
+    if len(mensagem) == 10: # "Não há solicitacao de acesso para predio e nem andar"
+        return mensagem_recebida
         
-    else:
-        print("O usuario deseja ir para um andar")
-        permissao =  Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
-        if permissao:
-            return True
-        else:
-            return False
-        
-        
-    
-    
+    elif len(mensagem) == 5: # "Acesso liberado no predio %s" % id_predio
+        id_predio = int(mensagem[len(mensagem)-1])
+        for predio in quantidade_predio:    # procura pelo predio no controle de populacao de predios
+            if predio[0] == id_predio:
+                predio[1] += 1          # aumenta a população do prédio em 1
+                quantidade_complexo += 1 # aumenta a populacao do complexo
+                break
+        return mensagem_recebida
+
+    elif len(mensagem) == 8: #  "%s não autorizado a acessar o predio %s" % (cargo, id_predio)
+        return mensagem_recebida
+
+    elif len(mensagem) == 4: # "O predio nao existe" ou "O andar nao existe"
+        return mensagem_recebida
+
+    elif len(mensagem) == 7: # "Acesso liberado no predio %s, andar %s" % (id_predio, id_andar)
+        id_andar = int(mensagem[len(mensagem)-1])
+        id_predio = int(mensagem[4])
+        for andar in quantidade_andar:
+            if andar[0] == id_predio and andar[1] == id_andar:
+                andar[2] += 1
+                for predio in quantidade_predio:
+                    if predio[0] == id_predio:
+                        predio[1] += 1
+                        break
+                quantidade_complexo += 1
+                break
+
+    elif len(mensagem) == 13: # "Usuario %s nao possui permissao para acessar o predio %s no andar %s" % (id_user, id_predio, id_andar)
+        return mensagem_recebida
+
+    elif len(mensagem) == 2:
+        return mensagem_recebida
+
+
+
 
 def Requisicao_Entrada(id_user, id_predio, id_andar, cargo):
     socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
 
     mensagem_Retorno = socket_Generico.recv_string()
-    print(mensagem_Retorno)
 
-    return mensagem_Retorno
+    mensagem_tratada = Trata_mensagem_retorno(mensagem_Retorno)
+    print(mensagem_tratada)
 
-def Requisicao_Andar(id_user, id_predio, id_andar, cargo):
-    socket_andar.send_string("%s %s %s %s" % ())
-    permissao = socket_andar.recv_string()
+    return mensagem_tratada
 
-    if permissao == "ACEITA":
-        return True
+
+def Requisicao_Saida(id_predio, id_andar):
+    if id_andar == "None":
+        identificador_predio = int(id_predio)
+        for predio in quantidade_predio:
+            if predio[0] == identificador_predio:
+                predio[1] -= 1
+                quantidade_complexo -= 1
+                break
     else:
-        return False
-    print("Envia requsicao para andar")
-
-
-def Requisicao_Predio(id_user, id_predio, cargo):
-    print("Envia requsicao para predio")
-
-
-
-
-def Entrada(id_user, id_predio, id_andar, cargo):
-    #Verificia se usuário pode entrar no complexo
-    permissao = Autentica_Pessoa(id_user, cargo)    
-    if not permissao:
-        # Envia a resposta negando a requisição do usuário
-        socket.send_string("NEGADO")
-    else:
-        # Se for permitida a entrada do usuário no complexo, deverá ser
-        # feita a verificação de autenticação do usuário no destino
-        permissao_entrada = Verifica_Credenciais(id_user, id_predio, id_andar, cargo)
-        if permissao_entrada:
-            socket.send_string("ACEITA")
-        else:
-            socket.send_string("NEGADO")
-
-
-
-def Saida():
-    print("SAIDA")
-
-
-
-
-
-
+        identificador_predio = int(id_predio)
+        identificador_andar = int(id_andar)
+        for andar in quantidade_andar:
+            if andar[0] == identificador_predio and andar[1] == identificador_andar:
+                andar[2] -= 1
+                for predio in quantidade_predio:
+                    if predio[0] == identificador_predio:
+                        predio[1] -= 1
+                        break
+                quantidade_complexo -= 1
+                break
 
 
 def main():
+
+    Inicializa_Listas(lista_predios, lista_andares)
+
     while True:
         #As requisições recebidas serão do tipo: [id_user, predio, andar, cargo]
         requisicao = socket.recv_string()
@@ -138,17 +152,13 @@ def main():
         operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
 
         if operacao == "ENTRADA":
-            Entrada(id_user, id_predio, id_andar, cargo)
-            print("Entrada")
+            Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+            
         elif operacao == "SAIDA":
-            print("Saida")
+            Requisicao_Saida(id_predio, id_andar)
+
         else:
             print("Operacao nao valida")
-
-
-
-
-
 
 
 
@@ -161,3 +171,4 @@ if __name__ == "__main__":
     operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
     resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
     socket.send_string("%s" % (resposta))
+    ComplexoService.fecharConexao()
