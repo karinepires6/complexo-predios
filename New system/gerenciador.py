@@ -8,6 +8,7 @@ import time
 import zmq
 import sys
 import interface_complexobd as ComplexoService
+from ast import literal_eval
 
 # Sessão de definição de sockets:
 # Socket que irá receber as requisições de entrada dos clientes
@@ -67,28 +68,24 @@ def Autentica_Pessoa(id_user, cargo):
 
 
 def Trata_mensagem_retorno(mensagem_recebida):
-    mensagem = mensagem_recebida.split()
-    if len(mensagem) == 10: # "Não há solicitacao de acesso para predio e nem andar"
-        return mensagem_recebida
-        
-    elif len(mensagem) == 5: # "Acesso liberado no predio %s" % id_predio
-        id_predio = int(mensagem[len(mensagem)-1])
+    mensagem_recebida = literal_eval(mensagem_recebida)
+    if int(mensagem_recebida.get("tipoErro")) == 1: # "Não há solicitacao de acesso para predio e nem andar"
+        return mensagem_recebida.get("mensagem")
+    elif int(mensagem_recebida.get("tipoErro")) == 2: # "Acesso liberado no predio %s"
+        id_predio = int(mensagem_recebida.get("id_predio"))
         for predio in quantidade_predio:    # procura pelo predio no controle de populacao de predios
             if predio[0] == id_predio:
                 predio[1] += 1          # aumenta a população do prédio em 1
                 quantidade_complexo += 1 # aumenta a populacao do complexo
                 break
-        return mensagem_recebida
-
-    elif len(mensagem) == 8: #  "%s não autorizado a acessar o predio %s" % (cargo, id_predio)
-        return mensagem_recebida
-
-    elif len(mensagem) == 4: # "O predio nao existe" ou "O andar nao existe"
-        return mensagem_recebida
-
-    elif len(mensagem) == 7: # "Acesso liberado no predio %s, andar %s" % (id_predio, id_andar)
-        id_andar = int(mensagem[len(mensagem)-1])
-        id_predio = int(mensagem[4])
+        return mensagem_recebida.get("mensagem")
+    elif int(mensagem_recebida.get("tipoErro")) == 3: #  "%s não autorizado a acessar o predio %s" % (cargo, id_predio)
+        return mensagem_recebida.get("mensagem")
+    elif int(mensagem_recebida.get("tipoErro")) == 4 or int(mensagem_recebida.get("tipoErro")) == 7:
+        return mensagem_recebida.get("mensagem")
+    elif int(mensagem_recebida.get("tipoErro")) == 5: # "Acesso liberado no predio %s, andar %s" % (id_predio, id_andar)
+        id_andar = int(mensagem_recebida.get("id_andar"))
+        id_predio = int(mensagem_recebida.get("id_predio"))
         for andar in quantidade_andar:
             if andar[0] == id_predio and andar[1] == id_andar:
                 andar[2] += 1
@@ -98,13 +95,12 @@ def Trata_mensagem_retorno(mensagem_recebida):
                         break
                 quantidade_complexo += 1
                 break
+        return mensagem_recebida.get("mensagem")
 
-    elif len(mensagem) == 13: # "Usuario %s nao possui permissao para acessar o predio %s no andar %s" % (id_user, id_predio, id_andar)
-        return mensagem_recebida
-
-    elif len(mensagem) == 2:
-        return mensagem_recebida
-
+    elif int(mensagem_recebida.get("tipoErro")) == 6: # "Usuario %s nao possui permissao para acessar o predio %s no andar %s" % (id_user, id_predio, id_andar)
+        return mensagem_recebida.get("mensagem")
+    else:
+        return mensagem_recebida.get("mensagem") # Acesso Invalido
 
 
 
