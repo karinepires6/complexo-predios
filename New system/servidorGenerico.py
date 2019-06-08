@@ -41,24 +41,26 @@ def Autentica(id_user, id_predio, id_andar, cargo):
 
 
 def main():
-    context = zmq.Context()
-    porta_servidor = "5559"
-    socketReceberRequisicao = context.socket(zmq.REP)
-    socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
 
-    mensagem_Chegada = socketReceberRequisicao.recv()
+    while True:
+        context = zmq.Context()
+        porta_servidor = "5559"
+        socketReceberRequisicao = context.socket(zmq.REP)
+        socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
 
-    mensagem_Chegada = mensagem_Chegada.decode()
-    id_user, id_predio, id_andar, cargo =  mensagem_Chegada.split()
+        mensagem_Chegada = socketReceberRequisicao.recv()
 
-    print("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
-    print(mensagem_Chegada)
-    mensagem_Saida = Autentica(id_user, id_predio, id_andar, cargo)
-    
+        mensagem_Chegada = mensagem_Chegada.decode()
+        id_user, id_predio, id_andar, cargo =  mensagem_Chegada.split()
 
-    socketReceberRequisicao.send_string("%s" % mensagem_Saida)
+        print("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
+        print(mensagem_Chegada)
+        mensagem_Saida = Autentica(id_user, id_predio, id_andar, cargo)
+        
 
-    ComplexoService.fecharConexao()
+        socketReceberRequisicao.send_string("%s" % mensagem_Saida)
+
+        ComplexoService.fecharConexao()
 
 if __name__ == "__main__":
     main()

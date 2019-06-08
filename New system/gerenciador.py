@@ -12,7 +12,7 @@ from ast import literal_eval
 
 # Sessão de definição de sockets:
 # Socket que irá receber as requisições de entrada dos clientes
-porta_servidor = "5555"
+porta_servidor = "5556"
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:"+ porta_servidor) 
@@ -135,23 +135,25 @@ def Requisicao_Saida(id_predio, id_andar):
                         break
                 quantidade_complexo -= 1
                 break
-
+    return "saiu"
 
 def main():
 
-    Inicializa_Listas(lista_predios, lista_andares)
+    Inicializa_Listas(quantidade_predio, quantidade_andar)
 
     while True:
         #As requisições recebidas serão do tipo: [id_user, predio, andar, cargo]
-        requisicao = socket.recv_string()
+        requisicao = socket.recv()
         requisicao = requisicao.decode()
         operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
 
         if operacao == "ENTRADA":
-            Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+            resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+            socket.send_string("%s" % (resposta))
             
         elif operacao == "SAIDA":
-            Requisicao_Saida(id_predio, id_andar)
+            resposta = Requisicao_Saida(id_predio, id_andar)
+            socket.send_string("%s" % (resposta))
 
         else:
             print("Operacao nao valida")
@@ -160,11 +162,15 @@ def main():
 
 
 if __name__ == "__main__":
-    ##main()
+    main()
     #MensagemTeste()
-    requisicao = socket.recv()
-    requisicao = requisicao.decode()
-    operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
-    resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
-    socket.send_string("%s" % (resposta))
+   
+   
+    # requisicao = socket.recv()
+    # requisicao = requisicao.decode()
+    # operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
+    # resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+    # socket.send_string("%s" % (resposta))
+    
+    
     ComplexoService.fecharConexao()

@@ -2,7 +2,7 @@ import zmq
 import time
 import sys 
 
-porta_gerenciador = "5555"
+porta_gerenciador = "5556"
 context = zmq.Context()
 socket_Catraca = context.socket(zmq.REQ)
 socket_Catraca.connect("tcp://localhost:" + porta_gerenciador)
