@@ -10,9 +10,9 @@ andares_disponiveis = ComplexoService.listaUsuariosPermitidosPorAndar()
 
 #realiza a autenticacao e liberacao do acesso ao predio ou andar
 def Autentica(id_user, id_predio, id_andar, cargo):
-    if id_predio == None and id_andar == None:
+    if id_predio == "None" and id_andar == "None":
         return {"mensagem": "Não há solicitacao de acesso para predio e nem andar", "tipoErro": 1}##erro tipo 1 não há solicitacao
-    elif id_predio != None and id_andar == None:
+    elif id_predio != "None" and id_andar == "None":
         for y in range(len(predios_disponiveis)):
             if int(id_predio) == predios_disponiveis[y].get("id_predio"):
                 for x in range(len(usuario_permitidos_predios)):
@@ -22,7 +22,7 @@ def Autentica(id_user, id_predio, id_andar, cargo):
                         return {"mensagem":"%s não autorizado a acessar o predio %s" % (cargo, id_predio), "tipoErro": 3} ## erro tipo 3  
             else:
                 return {"mensagem": "O predio nao existe", "tipoErro": 4} ## erro tipo 4 
-    elif id_predio != None and id_andar != None:
+    elif id_predio != "None" and id_andar != "None":
         for y in range(len(predios_disponiveis)):
             if int(id_predio) == predios_disponiveis[y].get("id_predio"):
                 for x in range(len(andares_disponiveis)):

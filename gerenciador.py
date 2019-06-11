@@ -33,8 +33,8 @@ usuarios_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
 
 
 # Listas de locais
-lista_predios = ComplexoService.listaPredios()
-lista_andares = ComplexoService.listaAndaresPorPredio()
+lista_predios = list(ComplexoService.listaPredios())
+lista_andares = list(ComplexoService.listaAndaresPorPredio())
 
 
 # Lista com quantidades presentes nos locais
@@ -48,10 +48,10 @@ quantidade_andar = []
 # Ininicializa as listas com as ids dos locais e zera a população de cada
 def Inicializa_Listas(quantidade_predio, quantidade_andar):
     for predio in lista_predios:
-        quantidade_predio.append((predio['id_predio'], 0))
+        quantidade_predio.append([predio['id_predio'], 0])
 
     for andar in lista_andares:
-        quantidade_andar.append((andar['id_predio'], andar['id_andar'], 0))
+        quantidade_andar.append([andar['id_predio'], andar['id_andar'], 0])
 
     
 
@@ -68,6 +68,7 @@ def Autentica_Pessoa(id_user, cargo):
 
 
 def Trata_mensagem_retorno(mensagem_recebida):
+    global quantidade_complexo
     mensagem_recebida = literal_eval(mensagem_recebida)
     if int(mensagem_recebida.get("tipoErro")) == 1: # "Não há solicitacao de acesso para predio e nem andar"
         return mensagem_recebida.get("mensagem")
@@ -116,6 +117,7 @@ def Requisicao_Entrada(id_user, id_predio, id_andar, cargo):
 
 
 def Requisicao_Saida(id_predio, id_andar):
+    global quantidade_complexo
     if id_andar == "None":
         identificador_predio = int(id_predio)
         for predio in quantidade_predio:
