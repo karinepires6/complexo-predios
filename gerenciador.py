@@ -7,7 +7,8 @@
 import time
 import zmq
 import sys
-import interface_complexobd as ComplexoService
+#import interface_complexobd as ComplexoService
+import zerorpc
 from ast import literal_eval
 
 # Sessão de definição de sockets:
@@ -17,14 +18,18 @@ context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:"+ porta_servidor) 
 
-
+#Socket para se comunicar com o servidorGenerico que ira resolver a requisicao
 porta_servidor_Generico = "5559"
 socket_Generico = context.socket(zmq.REQ)
 socket_Generico.connect("tcp://localhost:"+porta_servidor_Generico)
 
+portaServidorInterfaceBanco = "5561"
+clienteInterfaceBD = zerorpc.Client()
+clienteInterfaceBD.connect("tcp://localhost:"+portaServidorInterfaceBanco)
 
 # Fim da definição de sockets
 
+'''
 # Definição das listas de controle de usuários:
 usuarios_permitidos_complexo = ComplexoService.listaUsuariosPermitidosComplexo()
 usuarios_permitidos_predio = ComplexoService.listaUsuariosPermitidosNosPredios()
@@ -35,6 +40,19 @@ usuarios_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
 # Listas de locais
 lista_predios = list(ComplexoService.listaPredios())
 lista_andares = list(ComplexoService.listaAndaresPorPredio())
+'''
+#realiza chamada RPC para a interface do BD
+# Definição das listas de controle de usuários:
+usuarios_permitidos_complexo = clienteInterfaceBD.listaUsuariosPermitidosComplexo()
+usuarios_permitidos_predio = clienteInterfaceBD.listaUsuariosPermitidosNosPredios()
+usuarios_permitidos_andar = clienteInterfaceBD.listaUsuariosPermitidosPorAndar()
+# Fim da definição das listas
+
+
+# Listas de locais
+lista_predios = list(clienteInterfaceBD.listaPredios())
+lista_andares = list(clienteInterfaceBD.listaAndaresPorPredio())
+
 
 
 # Lista com quantidades presentes nos locais
@@ -175,4 +193,4 @@ if __name__ == "__main__":
     # socket.send_string("%s" % (resposta))
     
     
-    ComplexoService.fecharConexao()
+    clienteInterfaceBD.fecharConexao()

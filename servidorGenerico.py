@@ -1,12 +1,24 @@
 import zmq
 import time
 import sys 
-import interface_complexobd as ComplexoService
+import zerorpc
+#import interface_complexobd as ComplexoService
 
+portaServidorInterfaceBanco = "5561"
+clienteInterfaceBD = zerorpc.Client()
+clienteInterfaceBD.connect("tcp://localhost:"+portaServidorInterfaceBanco)
+'''
 usuario_permitidos_predios = ComplexoService.listaUsuariosPermitidosNosPredios()
 usuario_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
 predios_disponiveis = ComplexoService.listaPredios()
 andares_disponiveis = ComplexoService.listaUsuariosPermitidosPorAndar()
+'''
+#realiza uma chamada RPC com a interface do BD para captar os dados persistentes do BD
+usuario_permitidos_predios = clienteInterfaceBD.listaUsuariosPermitidosNosPredios()
+usuario_permitidos_andar = clienteInterfaceBD.listaUsuariosPermitidosPorAndar()
+predios_disponiveis = clienteInterfaceBD.listaPredios()
+andares_disponiveis = clienteInterfaceBD.listaUsuariosPermitidosPorAndar()
+
 
 #realiza a autenticacao e liberacao do acesso ao predio ou andar
 def Autentica(id_user, id_predio, id_andar, cargo):
@@ -60,7 +72,7 @@ def main():
 
         socketReceberRequisicao.send_string("%s" % mensagem_Saida)
 
-        ComplexoService.fecharConexao()
+        clienteInterfaceBD.fecharConexao()
 
 if __name__ == "__main__":
     main()
