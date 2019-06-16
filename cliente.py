@@ -33,12 +33,12 @@ while local != 0:
         opcao = int(input("Digite sua opcao: "))
         if opcao == 1:
             opcao = int(input("Onde deseja ir:\n1 - Complexo.\n" +
-                "2 - Predio.\n3 - Andar.\n0 - Voltar.\nDigite seua opcao:"))
+                "2 - Predio.\n3 - Andar.\n0 - Voltar.\nDigite sua opcao:"))
             if opcao == 1:
                 identificacao = input("\nDigite sua identificacao:")
                 cargo = input("Digite seu cargo: ")
                 cargo = cargo.title()
-                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, "None", "None", "VISITANTE"))
+                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, "None", "None", cargo))
                 mensagem_Recebida = socket_Catraca.recv()
                 mensagem_Recebida = mensagem_Recebida.decode()
                 print(mensagem_Recebida)
@@ -52,7 +52,7 @@ while local != 0:
                 predio_destino = input("\nDigite a id do predio: ")
                 cargo = input("Digite seu cargo: ")
                 cargo = cargo.title()
-                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, predio_destino, "None", "VISITANTE"))
+                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, predio_destino, "None", cargo))
                 mensagem_Recebida = socket_Catraca.recv()
                 mensagem_Recebida = mensagem_Recebida.decode()
                 print(mensagem_Recebida)
@@ -66,7 +66,7 @@ while local != 0:
                 andar_destino = input("\nDigite a id do andar: ")
                 cargo = input("Digite seu cargo: ")
                 cargo = cargo.title()
-                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, predio_destino, andar_destino, "VISITANTE"))
+                socket_Catraca.send_string("%s %s %s %s %s" % ("ENTRADA", identificacao, predio_destino, andar_destino, cargo))
                 mensagem_Recebida = socket_Catraca.recv()
                 mensagem_Recebida = mensagem_Recebida.decode()
                 print(mensagem_Recebida)
