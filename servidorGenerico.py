@@ -7,6 +7,12 @@ import zerorpc
 portaServidorInterfaceBanco = "5561"
 clienteInterfaceBD = zerorpc.Client()
 clienteInterfaceBD.connect("tcp://localhost:"+portaServidorInterfaceBanco)
+
+context = zmq.Context()
+porta_servidor = "5559"
+socketReceberRequisicao = context.socket(zmq.REP)
+socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
+
 '''
 usuario_permitidos_predios = ComplexoService.listaUsuariosPermitidosNosPredios()
 usuario_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
@@ -55,11 +61,7 @@ def Autentica(id_user, id_predio, id_andar, cargo):
 def main():
 
     while True:
-        context = zmq.Context()
-        porta_servidor = "5559"
-        socketReceberRequisicao = context.socket(zmq.REP)
-        socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
-
+        
         mensagem_Chegada = socketReceberRequisicao.recv()
 
         mensagem_Chegada = mensagem_Chegada.decode()
