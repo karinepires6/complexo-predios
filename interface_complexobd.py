@@ -1,14 +1,13 @@
 import sqlite3
+import zmq
 import zerorpc
-
 
 conn = sqlite3.connect('complexo.db')
 cursor = conn.cursor()
 
-
-
-class InterfaceBD(object):
+class InterfaceBd(object):
 	
+
 	'''
 	Retorna uma lista de usuários cadastrados no banco
 	'''
@@ -22,7 +21,7 @@ class InterfaceBD(object):
 			lista.append({"id_usuario": usuario[0], "nome": usuario[1]})
 
 		return lista
-	
+
 	'''
 	Retorna uma lista dos prédios cadastrados no banco
 	'''
@@ -89,10 +88,11 @@ class InterfaceBD(object):
 	def fecharConexao(self):
 		conn.close()
 
-portaServidorInterfaceBanco = "5561"
-servidorInterfaceBanco = zerorpc.Server(InterfaceBD())
-servidorInterfaceBanco.bind("tcp://*:"+portaServidorInterfaceBanco)
-servidorInterfaceBanco.run()
+socketRpc = zerorpc.Server(InterfaceBd())
+portaInterfaceBD = "5557"
+socketRpc.bind("tcp://*:"+portaInterfaceBD)
+socketRpc.run()
+
 """
 def main():
 	lista = listaAndaresPorPredio()

@@ -1,17 +1,19 @@
 import zmq
+import zerorpc
 import time
 import sys 
-import zerorpc
 #import interface_complexobd as ComplexoService
 
-portaServidorInterfaceBanco = "5561"
-clienteInterfaceBD = zerorpc.Client()
-clienteInterfaceBD.connect("tcp://localhost:"+portaServidorInterfaceBanco)
+socketInterfaceBD = zerorpc.Client()
+portaInterfaceBD = "5557"
+socketInterfaceBD.connect("tcp://ec2-3-219-203-114.compute-1.amazonaws.com:"+portaInterfaceBD)
 
-context = zmq.Context()
-porta_servidor = "5559"
-socketReceberRequisicao = context.socket(zmq.REP)
-socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
+
+usuario_permitidos_predios = socketInterfaceBD.listaUsuariosPermitidosNosPredios()
+usuario_permitidos_andar = socketInterfaceBD.listaUsuariosPermitidosPorAndar()
+predios_disponiveis = socketInterfaceBD.listaPredios()
+andares_disponiveis = socketInterfaceBD.listaUsuariosPermitidosPorAndar()
+
 
 '''
 usuario_permitidos_predios = ComplexoService.listaUsuariosPermitidosNosPredios()
@@ -19,13 +21,6 @@ usuario_permitidos_andar = ComplexoService.listaUsuariosPermitidosPorAndar()
 predios_disponiveis = ComplexoService.listaPredios()
 andares_disponiveis = ComplexoService.listaUsuariosPermitidosPorAndar()
 '''
-#realiza uma chamada RPC com a interface do BD para captar os dados persistentes do BD
-usuario_permitidos_predios = clienteInterfaceBD.listaUsuariosPermitidosNosPredios()
-usuario_permitidos_andar = clienteInterfaceBD.listaUsuariosPermitidosPorAndar()
-predios_disponiveis = clienteInterfaceBD.listaPredios()
-andares_disponiveis = clienteInterfaceBD.listaUsuariosPermitidosPorAndar()
-
-
 #realiza a autenticacao e liberacao do acesso ao predio ou andar
 def Autentica(id_user, id_predio, id_andar, cargo):
     if id_predio == "None" and id_andar == "None":
@@ -34,7 +29,7 @@ def Autentica(id_user, id_predio, id_andar, cargo):
         for y in range(len(predios_disponiveis)):
             if int(id_predio) == predios_disponiveis[y].get("id_predio"):
                 for x in range(len(usuario_permitidos_predios)):
-                    if int(id_user) == usuario_permitidos_predios[x].get("id_predio"):
+                    if int(id_user) == usuario_permitidos_predios[x].get("id_usuario"):
                         return {"mensagem": "Acesso liberado no predio %s" % id_predio, "id_predio": id_predio, "tipoErro": 2} ## erro tipo 2 
                     else:
                         return {"mensagem":"%s não autorizado a acessar o predio %s" % (cargo, id_predio), "tipoErro": 3} ## erro tipo 3  
@@ -61,7 +56,11 @@ def Autentica(id_user, id_predio, id_andar, cargo):
 def main():
 
     while True:
-        
+        context = zmq.Context()
+        porta_servidor = "5559"
+        socketReceberRequisicao = context.socket(zmq.REP)
+        socketReceberRequisicao.bind("tcp://*:"+ porta_servidor) 
+
         mensagem_Chegada = socketReceberRequisicao.recv()
 
         mensagem_Chegada = mensagem_Chegada.decode()
@@ -74,7 +73,7 @@ def main():
 
         socketReceberRequisicao.send_string("%s" % mensagem_Saida)
 
-        clienteInterfaceBD.fecharConexao()
+        socketInterfaceBD.fecharConexao()
 
 if __name__ == "__main__":
     main()
