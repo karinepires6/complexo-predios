@@ -10,6 +10,7 @@ import zerorpc
 import sys
 #import interface_complexobd as ComplexoService
 from ast import literal_eval
+from random import randint
 
 # Sessão de definição de sockets:
 # Socket que irá receber as requisições de entrada dos clientes
@@ -21,7 +22,10 @@ socket.bind("tcp://*:"+ porta_servidor)
 
 porta_servidor_Generico = "5559"
 socket_Generico = context.socket(zmq.REQ)
-socket_Generico.connect("tcp://localhost:"+porta_servidor_Generico)
+socket_Generico.connect("tcp://localhost:"+porta_servidor_Generico) # endereço da replica1
+
+socket_Generico_replica2 = context.socket(zmq.REQ)
+socket_Generico_replica2.connect("tcp://localost:"+porta_servidor_Generico) #endereço da replica2
 
 socketInterfaceBD = zerorpc.Client()
 portaInterfaceBD = "5563"
@@ -126,9 +130,12 @@ def Trata_mensagem_retorno(mensagem_recebida):
 
 
 def Requisicao_Entrada(id_user, id_predio, id_andar, cargo):
-    socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
-
-    mensagem_Retorno = socket_Generico.recv_string()
+    if randint(1,2) == 1:
+        socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
+        mensagem_Retorno = socket_Generico.recv_string()
+    else:
+        socket_Generico_replica2.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
+        mensagem_Retorno = socket_Generico_replica2.recv_string()
 
     mensagem_tratada = Trata_mensagem_retorno(mensagem_Retorno)
     print(mensagem_tratada)
