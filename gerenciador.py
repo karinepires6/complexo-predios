@@ -23,6 +23,10 @@ porta_servidor_Generico = "5559"
 socket_Generico = context.socket(zmq.REQ)
 socket_Generico.connect("tcp://ec2-3-219-17-239.compute-1.amazonaws.com:"+porta_servidor_Generico)
 
+socket_Generico_replica2 = context.socket(zmq.REQ)
+socket_Generico_replica2.connect("tcp://lec2-3-81-172-208.compute-1.amazonaws.com:"+porta_servidor_Generico)
+
+
 socketInterfaceBD = zerorpc.Client()
 portaInterfaceBD = "5557"
 socketInterfaceBD.connect("tcp://ec2-3-219-203-114.compute-1.amazonaws.com:"+portaInterfaceBD)
@@ -126,9 +130,12 @@ def Trata_mensagem_retorno(mensagem_recebida):
 
 
 def Requisicao_Entrada(id_user, id_predio, id_andar, cargo):
-    socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
-
-    mensagem_Retorno = socket_Generico.recv_string()
+    if randint(1,2) == 1:
+        socket_Generico.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
+        mensagem_Retorno = socket_Generico.recv_string()
+    else:
+        socket_Generico_replica2.send_string("%s %s %s %s" % (id_user, id_predio, id_andar, cargo))
+        mensagem_Retorno = socket_Generico_replica2.recv_string()
 
     mensagem_tratada = Trata_mensagem_retorno(mensagem_Retorno)
     print(mensagem_tratada)
