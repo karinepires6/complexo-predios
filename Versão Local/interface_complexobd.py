@@ -86,8 +86,65 @@ class InterfaceBd(object):
 		return lista
 	
 	def inserirUsuario(self, id_usuario, nome_usuario):
-		cursor.execute("INSERT INTO usuario(id_usuario, nome) VALUES (%s, %s)" %(id_usuario, nome_usuario))
-		
+		lista = [(id_usuario, nome_usuario)]
+		cursor.executemany("""INSERT INTO usuario (id_usuario, nome) VALUES (?, ?)""", lista)
+		conn.commit()
+
+	def inserirPredio(self, id_predio, capacidade_predio):
+		lista = [(id_predio, capacidade_predio)]
+		cursor.executemany("""INSERT INTO predio (id_predio, capacidade_predio) VALUES (?, ?)""", lista)
+		conn.commit()
+
+	def inserirAndar(self, id_andar, id_predio, capacidade_andar):
+		lista = [(id_andar, id_predio, capacidade_andar)]
+		cursor.executemany("""INSERT INTO andar (id_andar, id_predio, capacidade_andar) VALUES (?, ?)""", lista)
+		conn.commit()
+	
+	def habilitarPermissaoComplexo(self, id_usuario, tipo_usuario):
+		lista = [(id_usuario, tipo_usuario)]
+		cursor.executemany("""INSERT INTO permissao_complexo (id_usuario, tipo_usuario) VALUES (?, ?)""", lista)
+		conn.commit()
+
+	def habilitarPermissaoPredio(self, id_usuario, id_predio):
+		lista = [(id_usuario, id_predio)]
+		cursor.executemany("""INSERT INTO permissao_predio (id_usuario, id_predio) VALUES (?, ?)""", lista)
+		conn.commit()
+
+	def habilitarPermissaoAndar(self, id_usuario, id_predio, id_andar):
+		lista = [(id_usuario, id_predio, id_andar)]
+		cursor.executemany("""INSERT INTO permissao_andar (id_usuario, id_predio, id_andar) VALUES (?, ?, ?)""", lista)
+		conn.commit()
+	 	
+	
+	def removerUsuario(self, id_usuario, nome_usuario):
+		lista = [(id_usuario, nome_usuario)]
+		cursor.executemany("""DELETE FROM usuario WHERE id_usuario = ? AND nome = ?""", lista)
+		conn.commit()
+
+	def removerPredio(self, id_predio, capacidade_predio):
+		lista = [(id_predio, capacidade_predio)]
+		cursor.executemany("""DELETE FROM predio WHERE id_predio = ? AND capacidade_predio = ?""", lista)
+		conn.commit()
+
+	def removerAndar(self, id_andar, id_predio, capacidade_andar):
+		lista = [(id_andar, id_predio, capacidade_andar)]
+		cursor.executemany("""DELETE FROM andar WHERE id_andar = ? AND id_predio= ? AND capacidade_andar = ?""", lista)
+		conn.commit()
+	
+	def desabilitarPermissaoComplexo(self, id_usuario, tipo_usuario):
+		lista = [(id_usuario, tipo_usuario)]
+		cursor.executemany("""DELETE FROM  permissao_complexo WHERE id_usuario = ? AND tipo_usuario = ?""", lista)
+		conn.commit()
+
+	def desabilitarPermissaoPredio(self, id_usuario, id_predio):
+		lista = [(id_usuario, id_predio)]
+		cursor.executemany("""DELETE FROM permissao_predio WHERE id_usuario = ? AND id_predio = ?""", lista)
+		conn.commit()
+
+	def desabilitarPermissaoAndar(self, id_usuario, id_predio, id_andar):
+		lista = [(id_usuario, id_predio, id_andar)]
+		cursor.executemany("""DELETE FROM  permissao_andar WHERE id_usuario = ? AND id_predio = ? AND id_andar = ?""", lista)
+		conn.commit()
 
 
 	def fecharConexao(self):
