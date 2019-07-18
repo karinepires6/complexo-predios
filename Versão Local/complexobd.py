@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS permissao_andar(
     id_usuario INTEGER NOT NULL,
     id_predio INTEGER NOT NULL,
     id_andar INTEGER NOT NULL,
+    PRIMARY KEY(id_usuario, id_predio, id_andar),
     FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario),
     FOREIGN KEY(id_predio) REFERENCES predio(id_predio),
     FOREIGN KEY(id_andar) REFERENCES andar(id_andar)
