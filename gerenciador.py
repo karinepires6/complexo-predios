@@ -196,11 +196,11 @@ if __name__ == "__main__":
     #MensagemTeste()
    
    
-    # requisicao = socket.recv()
-    # requisicao = requisicao.decode()
-    # operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
-    # resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
-    # socket.send_string("%s" % (resposta))
+    requisicao = socket.recv()
+    requisicao = requisicao.decode()
+    operacao, id_user, id_predio, id_andar, cargo = requisicao.split()
+    resposta = Requisicao_Entrada(id_user, id_predio, id_andar, cargo)
+    socket.send_string("%s" % (resposta))
     
     
     socketInterfaceBD.fecharConexao()
