@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS permissao_andar(
     FOREIGN KEY(id_andar) REFERENCES andar(id_andar)
 );
 """)
-'''
+
 conn.execute("""
 INSERT INTO usuario(id_usuario, nome)
 	VALUES (1, "Giovanna"), (2, "Gabriel"), (3, "Karine")
@@ -90,9 +90,9 @@ INSERT INTO permissao_predio(id_usuario, id_predio)
 
 conn.execute("""
 INSERT INTO permissao_andar(id_usuario, id_predio, id_andar)
-	VALUES (1,1,1), (1,1,3), (2,1,1), (2,1,2), (2,1,3), (2,2,3), (2,3,1), (2,3,2)
+	VALUES (1,1,1), (1,1,3), (2,1,1), (2,1,2), (2,1,3), (2,2,3), (2,3,1), (2,3,2), (1, 3, 1), (3, 1, 1)
 """)
-'''
+
 
 
 print("successfully operation")
