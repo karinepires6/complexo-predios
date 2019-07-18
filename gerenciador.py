@@ -25,7 +25,7 @@ socket_Generico = context.socket(zmq.REQ)
 socket_Generico.connect("tcp://ec2-3-219-17-239.compute-1.amazonaws.com:"+porta_servidor_Generico)
 
 socket_Generico_replica2 = context.socket(zmq.REQ)
-socket_Generico_replica2.connect("tcp://ec2-18-204-12-232.compute-1.amazonaws.com:"+porta_servidor_Generico)
+socket_Generico_replica2.connect("tcp://ec2-18-204-12-232.compute-1.amazonaws.com"+porta_servidor_Generico)
 
 
 socketInterfaceBD = zerorpc.Client()
