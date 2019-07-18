@@ -35,13 +35,16 @@ conn.execute("""
 CREATE TABLE IF NOT EXISTS permissao_complexo(
     id_usuario INTEGER NOT NULL,
     tipo_usuario VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id_usuario, tipo_usuario),
     FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario)
 );
 """)
+
 conn.execute("""
 CREATE TABLE IF NOT EXISTS permissao_predio(
     id_usuario INTEGER NOT NULL,
     id_predio INTEGER NOT NULL,
+    PRIMARY KEY(id_usuario, id_predio),
     FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario),
     FOREIGN KEY(id_predio) REFERENCES predio(id_predio)
 );
