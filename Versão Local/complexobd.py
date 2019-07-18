@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS permissao_complexo(
     FOREIGN KEY(id_usuario) REFERENCES usuario(id_usuario)
 );
 """)
-
 conn.execute("""
 CREATE TABLE IF NOT EXISTS permissao_predio(
     id_usuario INTEGER NOT NULL,
