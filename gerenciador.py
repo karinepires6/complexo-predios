@@ -10,6 +10,7 @@ import zerorpc
 import sys
 #import interface_complexobd as ComplexoService
 from ast import literal_eval
+from random import randint
 
 # Sessão de definição de sockets:
 # Socket que irá receber as requisições de entrada dos clientes
