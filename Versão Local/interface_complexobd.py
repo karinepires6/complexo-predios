@@ -84,9 +84,15 @@ class InterfaceBd(object):
 			lista.append({"id_usuario": permissao[0], "id_predio": permissao[1], "id_andar": permissao[2]})
 
 		return lista
+	
+	def inserirUsuario(self, id_usuario, nome_usuario):
+		cursor.execute("INSERT INTO usuario(id_usuario, nome) VALUES (%s, %s)" %(id_usuario, nome_usuario))
+		
+
 
 	def fecharConexao(self):
 		conn.close()
+
 
 socketRpc = zerorpc.Server(InterfaceBd())
 portaInterfaceBD = "5563"
